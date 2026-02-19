@@ -30,16 +30,19 @@ pipeline {
             steps {
                 // Check if the process is running; restart if it is, start if it isn't
                 sh '''
-                    PM2_BIN=$(command -v pm2 || echo "./node_modules/.bin/pm2")
+                    PM2_BIN=$(command -v pm2 || echo "/var/lib/jenkins/tools/jenkins.plugins.nodejs.tools.NodeJSInstallation/node/bin/pm2")
                     
-                    $PM2_BIN describe ${APP_NAME} > /dev/null 2>&1
-                    if [ $? -eq 0 ]; then
-                        echo "Restarting App..."
+                    echo "Checking if ${APP_NAME} is already running..."
+                    
+                    # We use || true so the script doesn't crash if the app isn't found
+                    if $PM2_BIN show ${APP_NAME} > /dev/null 2>&1; then
+                        echo "App is running, restarting..."
                         $PM2_BIN restart ${APP_NAME} --update-env
                     else
-                        echo "Starting App..."
+                        echo "App not found, starting fresh..."
                         $PM2_BIN start app.js --name ${APP_NAME}
                     fi
+                    
                     $PM2_BIN save
                 '''
             }
