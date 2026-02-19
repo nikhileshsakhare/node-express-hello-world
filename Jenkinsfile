@@ -31,6 +31,7 @@ pipeline {
             steps {
                 // Check if the process is running; restart if it is, start if it isn't
                 sh '''
+                    export PATH=$PATH:$(npm config get prefix)/bin
                     pm2 describe ${APP_NAME} > /dev/null 2>&1 || true
 
                     if pm2 list | grep -q "${APP_NAME}"; then
