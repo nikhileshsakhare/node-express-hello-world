@@ -3,6 +3,9 @@ pipeline {
     environment {
         APP_NAME = "my-app"
     }
+    tools {
+        nodejs "node" 
+    }
 
     stages {
         stage('Checkout') {
