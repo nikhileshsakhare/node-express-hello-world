@@ -17,8 +17,14 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
-                sh 'pm2 --version || npm install -g pm2'
+                sh '''
+                    npm install
+                    pm2 --version || npm install -g pm2
+                    
+                    sudo su -s /bin/bash jenkins
+	                export PATH=$PATH:/var/lib/jenkins/tools/jenkins.plugins.nodejs.tools.NodeJSInstallation/node/bin
+                    exit
+                '''
             }
         }
 
