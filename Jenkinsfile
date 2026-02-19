@@ -18,7 +18,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh 'npm install'
-                sh 'npm install -g pm2'
+                sh 'pm2 --version || npm install -g pm2'
             }
         }
         stage('Security Scan (Optional)') {
