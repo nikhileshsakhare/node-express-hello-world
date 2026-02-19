@@ -31,10 +31,13 @@ pipeline {
             steps {
                 // Check if the process is running; restart if it is, start if it isn't
                 sh '''
-                    pm2 describe ${APP_NAME} > /dev/null
-                    if [ $? -eq 0 ]; then
+                    pm2 describe ${APP_NAME} > /dev/null 2>&1 || true
+
+                    if pm2 list | grep -q "${APP_NAME}"; then
+                        echo "App is running, restarting..."
                         pm2 restart ${APP_NAME} --update-env
                     else
+                        echo "App not found, starting new process..."
                         pm2 start app.js --name ${APP_NAME}
                     fi
                     pm2 save
