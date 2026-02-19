@@ -30,8 +30,9 @@ pipeline {
         stage('Deploy with PM2') {
             steps {
                 // Check if the process is running; restart if it is, start if it isn't
+                // export PATH=$PATH:$(npm config get prefix)/bin [this command dosn't work]
                 sh '''
-                    export PATH=$PATH:$(npm config get prefix)/bin
+                    export PATH=$PATH:/var/lib/jenkins/tools/jenkins.plugins.nodejs.tools.NodeJSInstallation/node/bin
                     pm2 describe ${APP_NAME} > /dev/null 2>&1 || true
 
                     if pm2 list | grep -q "${APP_NAME}"; then
