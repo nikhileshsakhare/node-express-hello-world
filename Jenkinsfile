@@ -21,11 +21,6 @@ pipeline {
                 sh 'pm2 --version || npm install -g pm2'
             }
         }
-        stage('Security Scan (Optional)') {
-            steps {
-                sh 'npm audit fix || true' 
-            }
-        }
 
         stage('Deploy with PM2') {
             steps {
