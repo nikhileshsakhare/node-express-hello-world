@@ -2,8 +2,8 @@ pipeline {
     agent any
     environment {
         APP_NAME = "my-app"
-		NODE_JS_BIN = "/var/lib/jenkins/tools/jenkins.plugins.nodejs.tools.NodeJSInstallation/node/bin"
-        PATH = "${NODE_JS_BIN}:${env.PATH}"
+		//NODE_JS_BIN = "/var/lib/jenkins/tools/jenkins.plugins.nodejs.tools.NodeJSInstallation/node/bin"
+        //PATH = "${NODE_JS_BIN}:${env.PATH}"
     }
     tools {
         nodejs "node" 
@@ -30,16 +30,17 @@ pipeline {
             steps {
                 // Check if the process is running; restart if it is, start if it isn't
                 sh '''
-                    pm2 describe ${APP_NAME} > /dev/null 2>&1 || true
-
-                    if pm2 list | grep -q "${APP_NAME}"; then
-                        echo "App is running, restarting..."
-                        pm2 restart ${APP_NAME} --update-env
+                    PM2_BIN=$(command -v pm2 || echo "./node_modules/.bin/pm2")
+                    
+                    $PM2_BIN describe ${APP_NAME} > /dev/null 2>&1
+                    if [ $? -eq 0 ]; then
+                        echo "Restarting App..."
+                        $PM2_BIN restart ${APP_NAME} --update-env
                     else
-                        echo "App not found, starting new process..."
-                        pm2 start app.js --name ${APP_NAME}
+                        echo "Starting App..."
+                        $PM2_BIN start app.js --name ${APP_NAME}
                     fi
-                    pm2 save
+                    $PM2_BIN save
                 '''
             }
         }
