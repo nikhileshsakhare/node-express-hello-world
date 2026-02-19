@@ -2,6 +2,8 @@ pipeline {
     agent any
     environment {
         APP_NAME = "my-app"
+		NODE_JS_BIN = "/var/lib/jenkins/tools/jenkins.plugins.nodejs.tools.NodeJSInstallation/node/bin"
+        PATH = "${NODE_JS_BIN}:${env.PATH}"
     }
     tools {
         nodejs "node" 
@@ -20,10 +22,6 @@ pipeline {
                 sh '''
                     npm install
                     pm2 --version || npm install -g pm2
-                    
-                    sudo su -s /bin/bash jenkins
-	                export PATH=$PATH:/var/lib/jenkins/tools/jenkins.plugins.nodejs.tools.NodeJSInstallation/node/bin
-                    exit
                 '''
             }
         }
@@ -50,6 +48,7 @@ pipeline {
     post {
         success {
             echo 'Deployment Successful!'
+			sh 'pm2 status'
         }
         failure {
             echo 'Deployment Failed. Check logs.'
